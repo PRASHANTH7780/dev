@@ -1,0 +1,23 @@
+node{
+    stage('ContinuousDownload')
+    {
+        git 'https://github.com/PRASHANTH7780/dev.git'
+    }
+    stage('ContinuousBuild')
+    {
+        sh 'mvn package'
+    }
+    stage('ContinuousDeployment')
+    {
+       deploy adapters: [tomcat9(credentialsId: '035b58e7-0a56-4931-9adc-3371261a1e28', path: '', url: 'http://172.31.5.249:8080')], contextPath: 'testapp', war: '**/*.war'
+    }
+    stage('ContinuousTesting')
+    {
+        git 'https://github.com/PRASHANTH7780/testing.git'
+        sh 'java -jar  /var/lib/jenkins/workspace/testing/testing.jar'
+    }
+     stage('ContinuesDelivery')
+    {
+       deploy adapters: [tomcat9(credentialsId: '035b58e7-0a56-4931-9adc-3371261a1e28', path: '', url: 'http://172.31.14.36:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
+}
